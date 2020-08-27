@@ -1,8 +1,8 @@
 ﻿using Business.Managers;
 using Business.Resources;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -10,16 +10,13 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class PeopleController
+    [ApiController, Route("[controller]"), Authorize]
+    public class PeopleController : ControllerBase
     {
-        private readonly ILogger<PeopleController> _logger;
         private readonly IPeopleManager _manager;
 
-        public PeopleController(ILogger<PeopleController> logger, IPeopleManager manager)
+        public PeopleController(IPeopleManager manager)
         {
-            _logger = logger;
             _manager = manager;
         }
 

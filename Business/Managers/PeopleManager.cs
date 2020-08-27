@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Business.Managers
@@ -54,6 +55,8 @@ namespace Business.Managers
 
             try
             {
+                ValidateResource(person);
+
                 var personEntity = new PersonEntity
                 {
                     DateOfBirth = person.DateOfBirth,
@@ -66,9 +69,9 @@ namespace Business.Managers
 
                 return MapToResource(personEntity);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError(ex.Message);
                 throw;
             }
             finally
@@ -85,6 +88,8 @@ namespace Business.Managers
 
             try
             {
+                ValidateResource(person);
+
                 var personEntity = _repository.GetEntityById(personId);
 
                 personEntity.DateOfBirth = person.DateOfBirth;
@@ -140,6 +145,15 @@ namespace Business.Managers
                 FullName = entity.FullName,
                 DateOfBirth = entity.DateOfBirth
             };
+        }
+
+        private void ValidateResource(PersonResource person)
+        {
+            if (!Regex.IsMatch(person.FullName, @"^[a-zA-Z]+$"))
+                throw new Exception("Name can only contain letters");
+        
+            if (person.DateOfBirth > DateTime.Now)
+                throw new Exception("Invalid date of birth");
         }
     }
 }

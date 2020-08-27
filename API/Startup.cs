@@ -4,12 +4,17 @@ using Business.Managers;
 using DAL;
 using DAL.Repositories;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+
+using System;
+using System.Text;
 
 namespace WebApplication1
 {
@@ -28,9 +33,29 @@ namespace WebApplication1
             services
                 .AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Issuer"],
+                        ValidAudience = Configuration["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"])),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
             services.AddSwaggerGen();
 
             services.AddTransient<IPeopleManager, PeopleManager>();
+            services.AddTransient<IUserManager, UserManager>();
 
             services.AddTransient(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 
@@ -58,6 +83,8 @@ namespace WebApplication1
 
             app.UseRouting();
 
+            app.UseAuthentication(); 
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
