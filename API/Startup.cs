@@ -1,4 +1,6 @@
 
+using API.Middleware;
+
 using Business.Managers;
 
 using DAL;
@@ -54,6 +56,17 @@ namespace WebApplication1
 
             services.AddSwaggerGen();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("Any", builder =>
+                {
+                    builder
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin();
+                });
+            });
+
             services.AddTransient<IPeopleManager, PeopleManager>();
             services.AddTransient<IUserManager, UserManager>();
 
@@ -72,6 +85,8 @@ namespace WebApplication1
 
             app.UseSwagger();
 
+            app.UseCors("Any");
+
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
@@ -82,11 +97,13 @@ namespace WebApplication1
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthentication(); 
             
-            app.UseAuthorization();
+            app.UseMiddleware<ExceptionMiddlewares>();
 
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

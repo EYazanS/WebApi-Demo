@@ -21,33 +21,45 @@ namespace API.Controllers
         }
 
         [HttpGet(Name = "GetAllPeople")]
-        public Task<IEnumerable<PersonResource>> Get()
+        public async Task<IActionResult> Get()
         {
-            return _manager.GetPeopleAsync();
+            return Ok(await _manager.GetPeopleAsync());
         }
 
-        [HttpGet("{id}", Name = "GetPerson")]
-        public PersonResource Get(Guid id)
+        [HttpGet("{id:Guid}", Name = "GetPerson")]
+        public IActionResult Get(Guid id)
         {
-            return _manager.GePersonById(id);
+            var person = _manager.GePersonById(id);
+
+            // Check if the id exists
+            if (person is null)
+                return NotFound($"No person was found with the id '{id}'");
+            
+            return Ok(person);
         }
 
         [HttpPost(Name = "InsertPerson")]
-        public PersonResource Post([FromBody] PersonResource person)
+        public IActionResult Post([FromBody] PersonResource person)
         {
-            return _manager.InserPerson(person);
+            return Created("/People", _manager.InserPerson(person));
         }
 
-        [HttpPut("{id}", Name = "UpdatePerson")]
-        public PersonResource Put(Guid id, [FromBody] PersonResource person)
+        [HttpPut("{id:Guid}", Name = "UpdatePerson")]
+        public IActionResult Put(Guid id, [FromBody] PersonResource person)
         {
-            return _manager.UpdatePerson(id, person);
+            // Check if the id exists before trying to update
+            if (_manager.GePersonById(id) is null)
+                return NotFound($"No person was found with the id '{id}'");
+
+            return Ok(_manager.UpdatePerson(id, person));
         }
 
-        [HttpDelete("{id}", Name = "DeletePerson")]
-        public void Delete(Guid id)
+        [HttpDelete("{id:Guid}", Name = "DeletePerson")]
+        public IActionResult Delete(Guid id)
         {
             _manager.DeleteEntity(id);
+
+            return NoContent();
         }
     }
 }

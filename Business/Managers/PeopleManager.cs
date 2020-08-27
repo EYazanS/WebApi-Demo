@@ -139,6 +139,9 @@ namespace Business.Managers
 
         private PersonResource MapToResource(PersonEntity entity)
         {
+            if (entity is null)
+                return null;
+
             return new PersonResource
             {
                 Id = entity.Id,
@@ -151,7 +154,7 @@ namespace Business.Managers
         {
             if (!Regex.IsMatch(person.FullName, @"^[a-zA-Z]+$"))
                 throw new Exception("Name can only contain letters");
-        
+
             if (person.DateOfBirth > DateTime.Now)
                 throw new Exception("Invalid date of birth");
         }
