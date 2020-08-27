@@ -3,6 +3,8 @@
 using DAL.Models;
 using DAL.Repositories;
 
+using Microsoft.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,11 @@ namespace Business.Managers
 
         Task<PersonResource> FirstOrDefaultAsync(Expression<Func<PersonEntity, bool>> expression);
 
-        PersonResource GePersonEntityById(Guid personId);
+        PersonResource GePersonById(Guid personId);
 
-        PersonResource InserPersonEntity(PersonResource person);
+        PersonResource InserPerson(PersonResource person);
 
-        PersonResource UpdateEntity(Guid personId, PersonResource person);
+        PersonResource UpdatePerson(Guid personId, PersonResource person);
 
         void DeleteEntity(Guid personId);
     }
@@ -29,10 +31,12 @@ namespace Business.Managers
     public class PeopleManager : IPeopleManager
     {
         private readonly IBaseRepository<PersonEntity, Guid> _repository;
+        private readonly ILogger<PeopleManager> _logger;
 
-        public PeopleManager(IBaseRepository<PersonEntity, Guid> repository)
+        public PeopleManager(IBaseRepository<PersonEntity, Guid> repository, ILogger<PeopleManager> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<PersonResource>> GetPeopleAsync(Expression<Func<PersonEntity, bool>> expression = null) => (await _repository
@@ -41,9 +45,9 @@ namespace Business.Managers
             .ToList();
 
         public async Task<PersonResource> FirstOrDefaultAsync(Expression<Func<PersonEntity, bool>> expression) => MapToResource(await _repository.FirstOrDefaultAsync(expression));
-        public PersonResource GePersonEntityById(Guid personId) => MapToResource(_repository.GetEntityById(personId));
+        public PersonResource GePersonById(Guid personId) => MapToResource(_repository.GetEntityById(personId));
 
-        public PersonResource InserPersonEntity(PersonResource person)
+        public PersonResource InserPerson(PersonResource person)
         {
             if (!_repository.HasTransaction())
                 _repository.StartTransaction();
@@ -74,7 +78,7 @@ namespace Business.Managers
             }
         }
 
-        public PersonResource UpdateEntity(Guid personId, PersonResource person)
+        public PersonResource UpdatePerson(Guid personId, PersonResource person)
         {
             if (!_repository.HasTransaction())
                 _repository.StartTransaction();
@@ -92,9 +96,10 @@ namespace Business.Managers
 
                 return MapToResource(personEntity);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex.Message);
+                throw ex;
             }
             finally
             {
@@ -115,9 +120,10 @@ namespace Business.Managers
 
                 _repository.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex.Message);
+                throw ex;
             }
             finally
             {
