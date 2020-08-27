@@ -52,6 +52,5 @@ namespace API.Controllers
         {
             _manager.DeleteEntity(id);
         }
-
     }
 }
