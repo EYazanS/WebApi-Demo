@@ -1,5 +1,8 @@
 
+using Business.Managers;
+
 using DAL;
+using DAL.Repositories;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +29,10 @@ namespace WebApplication1
                 .AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSwaggerGen();
+
+            services.AddTransient<IPeopleManager, PeopleManager>();
+
+            services.AddTransient(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 
             services.AddControllers();
         }
