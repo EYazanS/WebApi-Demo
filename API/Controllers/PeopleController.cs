@@ -23,31 +23,31 @@ namespace API.Controllers
             _manager = manager;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAllPeople")]
         public Task<IEnumerable<PersonResource>> Get()
         {
             return _manager.GetPeopleAsync();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetPerson")]
         public PersonResource Get(Guid id)
         {
             return _manager.GePersonById(id);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "InsertPerson")]
         public PersonResource Post([FromBody] PersonResource person)
         {
             return _manager.InserPerson(person);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdatePerson")]
         public PersonResource Put(Guid id, [FromBody] PersonResource person)
         {
             return _manager.UpdatePerson(id, person);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeletePerson")]
         public void Delete(Guid id)
         {
             _manager.DeleteEntity(id);
