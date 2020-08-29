@@ -68,6 +68,7 @@ namespace WebApplication1
             });
 
             services.AddTransient<IPeopleManager, PeopleManager>();
+
             services.AddTransient<IUserManager, UserManager>();
 
             services.AddTransient(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
@@ -78,6 +79,9 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // this will do the initial DB population
+            InitializeDatabase(app);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -97,17 +101,24 @@ namespace WebApplication1
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            
+
             app.UseMiddleware<ExceptionMiddlewares>();
 
             app.UseAuthentication();
 
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using IServiceScope scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+
+            scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
         }
     }
 }
