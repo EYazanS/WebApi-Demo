@@ -153,11 +153,11 @@ namespace Business.Managers
 
         private void ValidateResource(PersonResource person)
         {
-            if (!Regex.IsMatch(person.FullName, @"^[a-zA-Z]+$"))
-                throw new InvalidModelException("Name can only contain letters");
+            if (!Regex.IsMatch(person.FullName, @"^[a-z A-Z]+$"))
+                throw new InvalidModelException("Full name", "Name can only contain letters");
 
             if (person.DateOfBirth > DateTime.Now)
-                throw new InvalidModelException("Invalid date of birth");
+                throw new InvalidModelException("Date of birth", "Invalid date of birth");
         }
     }
 }
