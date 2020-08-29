@@ -2,6 +2,7 @@
 using Business.Resources;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 
@@ -48,7 +49,7 @@ namespace API.Controllers
         /// <response code="404">Person was not found</response>
         [HttpGet("{id:Guid}", Name = "GetPerson")]
         [Produces("application/json", Type = typeof(PersonResource))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get(Guid id)
         {
             PersonResource person = _manager.GePersonById(id);
@@ -68,8 +69,8 @@ namespace API.Controllers
         /// <response code="400">Invalid model</response>
         [HttpPost(Name = "InsertPerson")]
         [Produces("application/json", Type = typeof(PersonResource))]
-        [ProducesResponseType((int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Post([FromBody] PersonResource person)
         {
             return Created("/People", _manager.InserPerson(person));
@@ -84,8 +85,8 @@ namespace API.Controllers
         /// <response code="400">Invalid model</response>
         [HttpPut("{id:Guid}", Name = "UpdatePerson")]
         [Produces("application/json", Type = typeof(PersonResource))]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Put(Guid id, [FromBody] PersonResource person)
         {
             // Check if the id exists before trying to update
@@ -103,8 +104,8 @@ namespace API.Controllers
         /// <response code="404">Person was not found</response>
         [HttpDelete("{id:Guid}", Name = "DeletePerson")]
         [Produces("application/json")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Delete(Guid id)
         {
             // Check if the id exists before trying to update
