@@ -58,7 +58,7 @@ namespace Business.Managers
             {
                 ValidateResource(person);
 
-                var personEntity = new PersonEntity
+                PersonEntity personEntity = new PersonEntity
                 {
                     DateOfBirth = person.DateOfBirth,
                     FullName = person.FullName
@@ -91,7 +91,7 @@ namespace Business.Managers
             {
                 ValidateResource(person);
 
-                var personEntity = _repository.GetEntityById(personId);
+                PersonEntity personEntity = _repository.GetEntityById(personId);
 
                 personEntity.DateOfBirth = person.DateOfBirth;
                 personEntity.FullName = person.FullName;

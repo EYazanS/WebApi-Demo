@@ -13,16 +13,27 @@ using System.Threading.Tasks;
 
 namespace API.Middleware
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ExceptionMiddlewares
     {
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="next"></param>
         public ExceptionMiddlewares(RequestDelegate next)
         {
             _next = next;
         }
 
-        // IMyScopedService is injected into Invoke
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext httpContext)
         {
             try
@@ -31,7 +42,7 @@ namespace API.Middleware
             }
             catch (Exception ex)
             {
-                var errors = new Dictionary<string, string[]>
+                IDictionary<string, string[]> errors = new Dictionary<string, string[]>
                 {
                     { "Errors", new[] {ex.Message } }
                 };
@@ -44,7 +55,7 @@ namespace API.Middleware
                     };
                 }
 
-                var result = new ValidationProblemDetails(errors)
+                ValidationProblemDetails result = new ValidationProblemDetails(errors)
                 {
                     Status = (int)HttpStatusCode.BadRequest,
                     Title = "One or more validation errors occurred."

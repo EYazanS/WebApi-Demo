@@ -17,20 +17,35 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace WebApplication1
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -62,6 +77,13 @@ namespace WebApplication1
                     Title = "Demo API",
                     Version = "v1"
                 });
+
+                // Set the comments path for the Swagger JSON and UI.
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                
+                c.IncludeXmlComments(xmlPath);
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -107,7 +129,7 @@ namespace WebApplication1
             services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // this will do the initial DB population

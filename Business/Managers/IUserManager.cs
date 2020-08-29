@@ -37,17 +37,17 @@ namespace Business.Managers
 
         string GenerateJWTToken(AuthenticateResource model)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["SecretKey"]));
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["SecretKey"]));
 
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            Claim[] claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, model.Username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var token = new JwtSecurityToken(
+            JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _config["Issuer"],
                 audience: _config["Audience"],
                 claims: claims,

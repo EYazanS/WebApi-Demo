@@ -11,21 +11,33 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly IUserManager _manager;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="manager"></param>
         public UsersController(IUserManager manager)
         {
             _manager = manager;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("authenticate"), AllowAnonymous]
         public IActionResult Authenticate(AuthenticateResource model)
         {
-            var response = _manager.Authenticate(model);
+            string response = _manager.Authenticate(model);
 
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
