@@ -1,6 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Business.Exceptions;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace API.Middleware
@@ -23,7 +31,29 @@ namespace API.Middleware
             }
             catch (Exception ex)
             {
-                await httpContext.Response.WriteAsync(ex.Message);
+                var errors = new Dictionary<string, string[]>
+                {
+                    { "Errors", new[] {ex.Message } }
+                };
+
+                if (ex is InvalidModelException invalidModel)
+                {
+                    errors = new Dictionary<string, string[]>
+                    {
+                        { invalidModel.FieldName, new[] {ex.Message } }
+                    };
+                }
+
+                var result = new ValidationProblemDetails(errors)
+                {
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Title = "One or more validation errors occurred."
+                };
+
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(result));
             }
         }
     }

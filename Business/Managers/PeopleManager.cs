@@ -1,4 +1,5 @@
-﻿using Business.Resources;
+﻿using Business.Exceptions;
+using Business.Resources;
 
 using DAL.Models;
 using DAL.Repositories;
@@ -153,10 +154,10 @@ namespace Business.Managers
         private void ValidateResource(PersonResource person)
         {
             if (!Regex.IsMatch(person.FullName, @"^[a-zA-Z]+$"))
-                throw new Exception("Name can only contain letters");
+                throw new InvalidModelException("Name can only contain letters");
 
             if (person.DateOfBirth > DateTime.Now)
-                throw new Exception("Invalid date of birth");
+                throw new InvalidModelException("Invalid date of birth");
         }
     }
 }

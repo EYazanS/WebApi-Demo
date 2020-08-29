@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -34,7 +33,7 @@ namespace API.Controllers
             // Check if the id exists
             if (person is null)
                 return NotFound($"No person was found with the id '{id}'");
-            
+
             return Ok(person);
         }
 
